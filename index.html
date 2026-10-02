@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 하반기 S마을 조원 및 출결 통합 관리 대시보드</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(150, 150, 150, 0.5); }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen antialiased transition-colors font-sans pb-12">
+
+  <!-- Navigation Bar -->
+  <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black text-lg shadow-sm shadow-emerald-500/20">
+          S
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-base sm:text-lg text-slate-900 dark:text-white leading-tight">S마을 조원관리 대시보드</h1>
+            <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">2026 하반기</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400">마을장 강두한 & 6개 조 리더 통합 목양 센터</p>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="flex flex-wrap items-center gap-1.5 text-xs">
+        <a href="https://www.notion.so/270e824bedf98034b0fec32a8ca6610d" target="_blank" class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium transition-all flex items-center gap-1 border border-slate-200 dark:border-slate-700">
+          <span>🌟</span> 노션 본부
+        </a>
+        <a href="https://danielkang28.github.io/amsong72/" target="_blank" class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium transition-all flex items-center gap-1 border border-slate-200 dark:border-slate-700">
+          <span>📖</span> 암송시험
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/1rxmF42FlC2wumS4o0VS8zoWgqP48JtPHbHvmBibuYFc/edit" target="_blank" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 font-semibold transition-all flex items-center gap-1 border border-emerald-200 dark:border-emerald-800">
+          <span>📊</span> 원본 출석부
+        </a>
+        <button onclick="toggleDarkMode()" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700" title="다크모드 전환">
+          <span id="theme-icon">🌙</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+
+    <!-- KPI Summary Grid -->
+    <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">전체 등록 조원</div>
+        <div class="text-2xl font-black text-slate-900 dark:text-white mt-1">60<span class="text-sm font-normal text-slate-500 ml-1">명</span></div>
+        <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">6개 조 배정 완료</div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-900/50 shadow-xs">
+        <div class="text-xs text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span> 정기 출석 (3주 개근)
+        </div>
+        <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">6<span class="text-sm font-normal ml-1">명</span></div>
+        <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">조별 각 1명씩 완주</div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-900/50 shadow-xs">
+        <div class="text-xs text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-amber-500"></span> 부분 출석 (1~2회)
+        </div>
+        <div class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">18<span class="text-sm font-normal ml-1">명</span></div>
+        <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">매주 실출석 20~23명</div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900/50 shadow-xs">
+        <div class="text-xs text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span> 긴급 케어 (연락두절)
+        </div>
+        <div class="text-2xl font-black text-rose-600 dark:text-rose-400 mt-1">16<span class="text-sm font-normal ml-1">명</span></div>
+        <div class="text-[11px] text-rose-500/80 mt-0.5 font-medium">1:1 심방 최우선</div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs col-span-2 sm:col-span-1">
+        <div class="text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-slate-400"></span> 장기 부재 (군/유/지)
+        </div>
+        <div class="text-2xl font-black text-slate-700 dark:text-slate-300 mt-1">15<span class="text-sm font-normal ml-1">명</span></div>
+        <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">군복무, 유학, 지방거주</div>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2 text-xs sm:text-sm overflow-x-auto">
+      <button onclick="switchTab('leaders')" id="tab-leaders" class="tab-btn px-4 py-2 rounded-xl font-bold bg-emerald-600 text-white shadow-sm transition-all whitespace-nowrap">
+        📊 6개 조 비교 매트릭스
+      </button>
+      <button onclick="switchTab('urgent')" id="tab-urgent" class="tab-btn px-4 py-2 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all whitespace-nowrap">
+        🚨 긴급 목양 명단 (16명)
+      </button>
+      <button onclick="switchTab('members')" id="tab-members" class="tab-btn px-4 py-2 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all whitespace-nowrap">
+        📋 60명 전원 출석부
+      </button>
+      <button onclick="switchTab('schedule')" id="tab-schedule" class="tab-btn px-4 py-2 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all whitespace-nowrap">
+        🗓️ 26-2 사역 일정표
+      </button>
+    </div>
+
+    <!-- TAB 1: 6개 조 비교 매트릭스 -->
+    <div id="view-leaders" class="tab-content space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+        <!-- 장원태 조 -->
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-emerald-500/50 transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-base">⚡</span>
+                <span class="font-bold text-base text-slate-900 dark:text-white">장원태 조</span>
+                <span class="text-xs text-slate-400">번개요정</span>
+              </div>
+              <span class="px-2 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">총 9명</span>
+            </div>
+            
+            <div class="space-y-1.5 text-xs text-slate-600 dark:text-slate-400 mb-3">
+              <div class="flex justify-between"><span>주차별 출석:</span><span class="font-bold text-slate-900 dark:text-white">9/6 (4명) → 9/13 (2명) → 9/20 (3명)</span></div>
+              <div class="flex justify-between"><span>3주 개근:</span><span class="font-bold text-emerald-600">정영광 (5학년 / QT 4.0)</span></div>
+              <div class="flex justify-between"><span>부분 출석:</span><span>송준표(2회), 조진우(1회), 황형민(1회), 김고은★(2회)</span></div>
+            </div>
+          </div>
+          <div class="pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+            <span class="text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1">🚨 연락두절 2명</span>
+            <span class="text-slate-500 text-[11px]">김윤수, 류지현</span>
+          </div>
+        </div>
+
+        <!-- 김민지 조 -->
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-emerald-500/50 transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-base">🎂</span>
+                <span class="font-bold text-base text-slate-900 dark:text-white">김민지 조</span>
+                <span class="text-xs text-slate-400">생일요정</span>
+              </div>
+              <span class="px-2 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">총 10명</span>
+            </div>
+            
+            <div class="space-y-1.5 text-xs text-slate-600 dark:text-slate-400 mb-3">
+              <div class="flex justify-between"><span>주차별 출석:</span><span class="font-bold text-slate-900 dark:text-white">9/6 (2명) → 9/13 (2명) → 9/20 (3명)</span></div>
+              <div class="flex justify-between"><span>3주 개근:</span><span class="font-bold text-emerald-600">김예성 (6학년 / QT 6.0)</span></div>
+              <div class="flex justify-between"><span>부분 출석:</span><span>김담은(2회), 최호성(1회), 최영수(1회)</span></div>
+            </div>
+          </div>
+          <div class="pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+            <span class="text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1">🚨 연락두절 1명</span>
+            <span class="text-slate-500 text-[11px]">정민정</span>
+          </div>
+        </div>
+
+        <!-- 김수인 조 -->
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-emerald-500/50 transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-base">📸</span>
+                <span class="font-bold text-base text-slate-900 dark:text-white">김수인 조</span>
+                <span class="text-xs text-slate-400">사진요정</span>
+              </div>
+              <span class="px-2 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">총 9명</span>
+            </div>
+            
+            <div class="space-y-1.5 text-xs text-slate-600 dark:text-slate-400 mb-3">
+              <div class="flex justify-between"><span>주차별 출석:</span><span class="font-bold text-slate-900 dark:text-white">9/6 (2명) → 9/13 (3명) → 9/20 (3명)</span></div>
+              <div class="flex justify-between"><span>3주 개근:</span><span class="font-bold text-emerald-600">신제홍 (3학년 / QT 3.3)</span></div>
+              <div class="flex justify-between"><span>부분 출석:</span><span>김미서(2회), 박지호A(2회), 최규빈(1회)</span></div>
+            </div>
+          </div>
+          <div class="pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+            <span class="text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1">🚨 연락두절 5명</span>
+            <span class="text-slate-500 text-[11px] truncate max-w-[150px]" title="김솔희, 김채연B, 류현진, 이유정, 신정연">솔희, 채연B, 현진 외 2</span>
+          </div>
+        </div>
+
+        <!-- 반우인 조 -->
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-emerald-500/50 transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-base">🔔</span>
+                <span class="font-bold text-base text-slate-900 dark:text-white">반우인 조</span>
+                <span class="text-xs text-slate-400">알림요정</span>
+              </div>
+              <span class="px-2 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">총 11명</span>
+            </div>
+            
+            <div class="space-y-1.5 text-xs text-slate-600 dark:text-slate-400 mb-3">
+              <div class="flex justify-between"><span>주차별 출석:</span><span class="font-bold text-slate-900 dark:text-white">9/6 (2명) → 9/13 (2명) → 9/20 (3명)</span></div>
+              <div class="flex justify-between"><span>3주 개근:</span><span class="font-bold text-emerald-600">최장혁 (5학년 / QT 4.7)</span></div>
+              <div class="flex justify-between"><span>부분 출석:</span><span>오재윤(1회), 이은혜(GBS 2회), 탁은비(1회)</span></div>
+            </div>
+          </div>
+          <div class="pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+            <span class="text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1">🚨 연락두절 2명</span>
+            <span class="text-slate-500 text-[11px]">하범수, 이수빈A★</span>
+          </div>
+        </div>
+
+        <!-- 윤정화 조 -->
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-emerald-500/50 transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-base">🌅</span>
+                <span class="font-bold text-base text-slate-900 dark:text-white">윤정화 조</span>
+                <span class="text-xs text-slate-400">새벽요정</span>
+              </div>
+              <span class="px-2 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">총 10명</span>
+            </div>
+            
+            <div class="space-y-1.5 text-xs text-slate-600 dark:text-slate-400 mb-3">
+              <div class="flex justify-between"><span>주차별 출석:</span><span class="font-bold text-slate-900 dark:text-white">9/6 (2명) → 9/13 (2명) → 9/20 (3명)</span></div>
+              <div class="flex justify-between"><span>3주 개근:</span><span class="font-bold text-emerald-600">양예지 (3학년 / QT 3.3)</span></div>
+              <div class="flex justify-between"><span>부분 출석:</span><span>김지은B(2회), 이솔(2회)</span></div>
+            </div>
+          </div>
+          <div class="pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+            <span class="text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1">🚨 연락두절 1명</span>
+            <span class="text-slate-500 text-[11px]">봉진훤</span>
+          </div>
+        </div>
+
+        <!-- 이현섭 조 -->
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-emerald-500/50 transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-base">🤝</span>
+                <span class="font-bold text-base text-slate-900 dark:text-white">이현섭 조</span>
+                <span class="text-xs text-slate-400">만남요정</span>
+              </div>
+              <span class="px-2 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">총 11명</span>
+            </div>
+            
+            <div class="space-y-1.5 text-xs text-slate-600 dark:text-slate-400 mb-3">
+              <div class="flex justify-between"><span>주차별 출석:</span><span class="font-bold text-slate-900 dark:text-white">9/6 (2명) → 9/13 (3명) → 9/20 (2명)</span></div>
+              <div class="flex justify-between"><span>3주 개근:</span><span class="font-bold text-emerald-600">조현서 (6학년 / QT 6.0)</span></div>
+              <div class="flex justify-between"><span>부분 출석:</span><span>김서현(1회), 이찬규(1회), 임유민★(2회)</span></div>
+            </div>
+          </div>
+          <div class="pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+            <span class="text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1">🚨 연락두절 5명</span>
+            <span class="text-slate-500 text-[11px] truncate max-w-[150px]" title="김찬승, 장영재, 전소현, 전유찬, 유성현">찬승, 영재, 소현 외 2</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 2: 긴급 목양 명단 (16명) -->
+    <div id="view-urgent" class="tab-content hidden space-y-4">
+      <div class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 flex items-start gap-3">
+        <span class="text-xl">🚨</span>
+        <div>
+          <h3 class="font-bold text-sm text-rose-800 dark:text-rose-200">목양 최우선 심방 대상자 (코드 0: 연락안됨 16명)</h3>
+          <p class="text-xs text-rose-700 dark:text-rose-300/90 mt-0.5">
+            9월 내내 출석하지 못하고 연락이 닿지 않은 지체들입니다. 10월 첫 주 마을장 및 담당 리더의 1:1 안부 연락 및 전화 심방이 시급합니다.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        
+        <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900/40 shadow-xs">
+          <div class="flex items-center justify-between font-bold text-xs text-rose-600 dark:text-rose-400 mb-2 border-b border-rose-100 dark:border-rose-950 pb-1.5">
+            <span>⚡ 장원태 조 (2명)</span>
+            <span class="text-[11px] text-slate-400">번개요정</span>
+          </div>
+          <ul class="space-y-2 text-xs">
+            <li class="flex justify-between items-center">
+              <div><span class="font-bold">김윤수</span> <span class="text-slate-400 text-[11px]">(10학년)</span></div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">연락두절 3주</span>
+            </li>
+            <li class="flex justify-between items-center">
+              <div><span class="font-bold">류지현</span> <span class="text-slate-400 text-[11px]">(10학년)</span></div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">연락두절 3주</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900/40 shadow-xs">
+          <div class="flex items-center justify-between font-bold text-xs text-rose-600 dark:text-rose-400 mb-2 border-b border-rose-100 dark:border-rose-950 pb-1.5">
+            <span>🎂 김민지 조 (1명)</span>
+            <span class="text-[11px] text-slate-400">생일요정</span>
+          </div>
+          <ul class="space-y-2 text-xs">
+            <li class="flex justify-between items-center">
+              <div><span class="font-bold">정민정</span> <span class="text-slate-400 text-[11px]">(6학년)</span></div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">연락두절 3주</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900/40 shadow-xs">
+          <div class="flex items-center justify-between font-bold text-xs text-rose-600 dark:text-rose-400 mb-2 border-b border-rose-100 dark:border-rose-950 pb-1.5">
+            <span>📸 김수인 조 (5명)</span>
+            <span class="text-[11px] text-rose-500 font-bold">집중심방!</span>
+          </div>
+          <ul class="space-y-2 text-xs">
+            <li class="flex justify-between items-center">
+              <div><span class="font-bold">김솔희</span> <span class="text-slate-400 text-[11px]">(7학년/지방)</span></div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">연락두절</span>
+            </li>
+            <li class="flex justify-between items-center">
+              <div><span class="font-bold">김채연B</span> <span class="text-slate-400 text-[11px]">(7학년)</span></div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">연락두절</span>
+            </li>
+            <li class="flex justify-between items-center">
+              <div><span class="font-bold">류현진</span> <span class="text-slate-400 text-[11px]">(4학년/지방)</span></div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">연락두절</span>
+            </li>
+            <li class="flex justify-between items-center">
+              <div><span class="font-bold">이유정</span> <span class="text-slate-400 text-[11px]">(2학년)</span></div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">연락두절</span>
+            </li>
+            <li class="flex justify-between items-center">
+              <div><span class="font-bold">신정연★</span> <span class="text-slate-400 text-[11px]">(3학년/유학)</span></div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">연락두절</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900/40 shadow-xs">
+          <div class="flex items-center justify-between font-bold text-xs text-rose-600 dark:text-rose-400 mb-2 border-b border-rose-100 dark:border-rose-950 pb-1.5">
+            <span>🔔 반우인 조 (2명)</span>
+            <span class="text-[11px] text-slate-400">알림요정</span>
+          </div>
+          <ul class="space-y-2 text-xs">
+            <li class="flex justify-between items-center">
+              <div><span class="font-bold">하범수</span> <span class="text-slate-400 text-[11px]">(10학년/지방)</span></div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">연락두절</span>
+            </li>
+            <li class="flex justify-between items-center">
+              <div><span class="font-bold">이수빈A★</span> <span class="text-slate-400 text-[11px]">(4학년)</span></div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">9/20 연락두절</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900/40 shadow-xs">
+          <div class="flex items-center justify-between font-bold text-xs text-rose-600 dark:text-rose-400 mb-2 border-b border-rose-100 dark:border-rose-950 pb-1.5">
+            <span>🌅 윤정화 조 (1명)</span>
+            <span class="text-[11px] text-slate-400">새벽요정</span>
+          </div>
+          <ul class="space-y-2 text-xs">
+            <li class="flex justify-between items-center">
+              <div><span class="font-bold">봉진훤</span> <span class="text-slate-400 text-[11px]">(11학년)</span></div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">연락두절 3주</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900/40 shadow-xs">
+          <div class="flex items-center justify-between font-bold text-xs text-rose-600 dark:text-rose-400 mb-2 border-b border-rose-100 dark:border-rose-950 pb-1.5">
+            <span>🤝 이현섭 조 (5명)</span>
+            <span class="text-[11px] text-rose-500 font-bold">집중심방!</span>
+          </div>
+          <ul class="space-y-2 text-xs">
+            <li class="flex justify-between items-center">
+              <div><span class="font-bold">김찬승</span> <span class="text-slate-400 text-[11px]">(7학년/지방)</span></div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">연락두절</span>
+            </li>
+            <li class="flex justify-between items-center">
+              <div><span class="font-bold">장영재</span> <span class="text-slate-400 text-[11px]">(9학년)</span></div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">9/20 연락두절</span>
+            </li>
+            <li class="flex justify-between items-center">
+              <div><span class="font-bold">전소현</span> <span class="text-slate-400 text-[11px]">(7학년)</span></div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">연락두절</span>
+            </li>
+            <li class="flex justify-between items-center">
+              <div><span class="font-bold">전유찬</span> <span class="text-slate-400 text-[11px]">(5학년)</span></div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">연락두절</span>
+            </li>
+            <li class="flex justify-between items-center">
+              <div><span class="font-bold">유성현★</span> <span class="text-slate-400 text-[11px]">(1학년)</span></div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">연락두절</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 3: 60명 전원 출석부 -->
+    <div id="view-members" class="tab-content hidden space-y-4">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs space-y-4">
+        
+        <!-- Controls & Filters -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-1.5 text-xs">
+            <button onclick="filterMembers('all')" class="filter-btn active px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold transition-all">전체 (60)</button>
+            <button onclick="filterMembers('attend')" class="filter-btn px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-200 transition-all">🟢 출석지체 (24)</button>
+            <button onclick="filterMembers('urgent')" class="filter-btn px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-200 transition-all">🚨 연락두절 (16)</button>
+            <button onclick="filterMembers('abroad')" class="filter-btn px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-200 transition-all">⚪ 군/유/지 (15)</button>
+            
+            <select id="leader-select" onchange="filterLeader(this.value)" class="ml-2 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-200 font-semibold focus:outline-none focus:border-emerald-500">
+              <option value="all">조 전체 보기</option>
+              <option value="원태">장원태 조</option>
+              <option value="민지">김민지 조</option>
+              <option value="수인">김수인 조</option>
+              <option value="우인">반우인 조</option>
+              <option value="정화">윤정화 조</option>
+              <option value="현섭">이현섭 조</option>
+            </select>
+          </div>
+
+          <div class="relative w-full sm:w-64">
+            <input type="text" id="member-search" oninput="searchMembers()" placeholder="🔍 조원 이름 또는 학년 검색..." class="w-full px-3.5 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500">
+          </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="sticky top-0 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 font-bold">
+              <tr>
+                <th class="py-2.5 px-3">조</th>
+                <th class="py-2.5 px-3">이름</th>
+                <th class="py-2.5 px-2 text-center">학년</th>
+                <th class="py-2.5 px-2.5 text-center">9/6</th>
+                <th class="py-2.5 px-2.5 text-center">9/13</th>
+                <th class="py-2.5 px-2.5 text-center">9/20</th>
+                <th class="py-2.5 px-2.5 text-center">9월 출석</th>
+                <th class="py-2.5 px-3">상태 / 결석 사유</th>
+                <th class="py-2.5 px-2.5 text-center">평균 QT</th>
+              </tr>
+            </thead>
+            <tbody id="member-rows" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-800 dark:text-slate-200">
+              <!-- Inserted dynamically via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 4: 26-2 사역 일정표 -->
+    <div id="view-schedule" class="tab-content hidden space-y-4">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs space-y-3">
+        <h3 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+          <span>🗓️</span> 2026 하반기 토요 리더훈련(LT) & 주일 부서집회 캘린더
+        </h3>
+        
+        <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 font-bold">
+              <tr>
+                <th class="py-2 px-3">날짜</th>
+                <th class="py-2 px-3">구분</th>
+                <th class="py-2 px-3">행사명 / 진도</th>
+                <th class="py-2 px-3">비고 / 특이사항</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+              <tr class="bg-slate-50/50 dark:bg-slate-900/50"><td class="py-2 px-3">10.03 (토)</td><td class="py-2 px-3 font-semibold">토요LT</td><td class="py-2 px-3">오후 ｜ LBS: 새생명1과</td><td class="py-2 px-3 text-slate-400">-</td></tr>
+              <tr class="bg-emerald-50/40 dark:bg-emerald-950/20 font-medium"><td class="py-2 px-3">10.04 (주)</td><td class="py-2 px-3 font-semibold text-emerald-600">주일집회</td><td class="py-2 px-3">부서집회 ｜ GBS: 새생명1과</td><td class="py-2 px-3 text-emerald-600 font-semibold">🌟 7 Touches 시작일</td></tr>
+              <tr><td class="py-2 px-3">10.10 (토)</td><td class="py-2 px-3 font-semibold">토요LT</td><td class="py-2 px-3">오전 ｜ LBS: 새생명2과</td><td class="py-2 px-3 text-amber-600">⚠️ 반우인 불참 / 윤정화 조퇴</td></tr>
+              <tr><td class="py-2 px-3">10.11 (주)</td><td class="py-2 px-3 font-semibold text-emerald-600">주일집회</td><td class="py-2 px-3">부서집회 ｜ GBS: 새생명2과</td><td class="py-2 px-3 text-slate-400">-</td></tr>
+              <tr><td class="py-2 px-3">10.17 (토)</td><td class="py-2 px-3 font-semibold">토요LT</td><td class="py-2 px-3">오후 ｜ LBS: 새생명3과</td><td class="py-2 px-3 text-slate-400">-</td></tr>
+              <tr><td class="py-2 px-3">10.18 (주)</td><td class="py-2 px-3 font-semibold text-emerald-600">주일집회</td><td class="py-2 px-3">부서집회 ｜ GBS: 새생명3과</td><td class="py-2 px-3 text-slate-400">-</td></tr>
+              <tr><td class="py-2 px-3">10.24 (토)</td><td class="py-2 px-3 font-semibold">토요LT</td><td class="py-2 px-3">오전 (특새) ｜ LBS: 새생명4과</td><td class="py-2 px-3 text-slate-400">-</td></tr>
+              <tr><td class="py-2 px-3">10.25 (주)</td><td class="py-2 px-3 font-semibold text-emerald-600">주일집회</td><td class="py-2 px-3">부서집회 ｜ GBS: 새생명4과</td><td class="py-2 px-3 text-slate-400">-</td></tr>
+              <tr class="bg-amber-50/50 dark:bg-amber-950/20"><td class="py-2 px-3">10.31 (토)</td><td class="py-2 px-3 font-semibold">토요LT</td><td class="py-2 px-3">오후 (pre-노방전도) ｜ LBS: 3,4과</td><td class="py-2 px-3 text-amber-600 font-semibold">전도 집회 준비</td></tr>
+              <tr class="bg-amber-50/50 dark:bg-amber-950/20"><td class="py-2 px-3">11.01 (주)</td><td class="py-2 px-3 font-semibold text-emerald-600">주일집회</td><td class="py-2 px-3">드림이 노방전도 ｜ GBS: 3,4과</td><td class="py-2 px-3 text-amber-600 font-semibold">🌟 드림이 노방전도</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // Theme toggle
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        document.getElementById('theme-icon').innerText = '🌙';
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.classList.add('dark');
+        document.getElementById('theme-icon').innerText = '☀️';
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+      document.getElementById('theme-icon').innerText = '☀️';
+    }
+
+    // Tab switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-sm', 'font-bold');
+        btn.classList.add('text-slate-600', 'dark:text-slate-400', 'font-medium');
+      });
+      document.getElementById('view-' + tabId).classList.remove('hidden');
+      const activeBtn = document.getElementById('tab-' + tabId);
+      activeBtn.classList.remove('text-slate-600', 'dark:text-slate-400', 'font-medium');
+      activeBtn.classList.add('bg-emerald-600', 'text-white', 'shadow-sm', 'font-bold');
+      
+      if (tabId === 'members') {
+        renderMembers();
+      }
+    }
+
+    // 60-Member Dataset
+    const membersData = [
+      // 장원태 조
+      {leader: '원태', name: '정영광', grade: 5, w1: 'A', w2: 'A', w3: 'A', cnt: 3, status: '정기출석', reason: '정상출석', qt: 4.0, cat: 'attend'},
+      {leader: '원태', name: '김고은★', grade: 4, w1: 'A', w2: '결(학업)', w3: 'B', cnt: 2, status: '부분출석', reason: '학업/시험', qt: 6.0, cat: 'attend'},
+      {leader: '원태', name: '송준표', grade: 10, w1: '결(연락X)', w2: 'A', w3: 'A', cnt: 2, status: '부분출석', reason: '연락안됨 이력', qt: 0.0, cat: 'attend'},
+      {leader: '원태', name: '조진우', grade: 11, w1: 'A', w2: '결(연락X)', w3: '결(학업)', cnt: 1, status: '부분출석', reason: '학업/시험', qt: 6.0, cat: 'attend'},
+      {leader: '원태', name: '황형민', grade: 8, w1: 'A', w2: '결(연락X)', w3: '결(연락X)', cnt: 1, status: '부분출석', reason: '연락안됨', qt: 3.0, cat: 'attend'},
+      {leader: '원태', name: '김예지A', grade: 10, w1: '결(연락X)', w2: '결(직장)', w3: '결(직장)', cnt: 0, status: '미출석', reason: '직장/생업', qt: 0, cat: 'etc'},
+      {leader: '원태', name: '김윤수', grade: 10, w1: '결(연락X)', w2: '결(군유지)', w3: '결(연락X)', cnt: 0, status: '미출석', reason: '연락안됨🚨', qt: 0, cat: 'urgent'},
+      {leader: '원태', name: '류지현', grade: 10, w1: '결(연락X)', w2: '결(군유지)', w3: '결(연락X)', cnt: 0, status: '미출석', reason: '연락안됨🚨', qt: 0, cat: 'urgent'},
+      {leader: '원태', name: '박유진', grade: 13, w1: '결(연락X)', w2: '결(군유지)', w3: '결(군유지)', cnt: 0, status: '미출석', reason: '자체졸업⚪', qt: 0, cat: 'abroad'},
+
+      // 김민지 조
+      {leader: '민지', name: '김예성', grade: 6, w1: 'A', w2: 'A', w3: 'A', cnt: 3, status: '정기출석', reason: '정상출석', qt: 6.0, cat: 'attend'},
+      {leader: '민지', name: '김담은', grade: 5, w1: 'A', w2: '결(연락X)', w3: 'A', cnt: 2, status: '부분출석', reason: '정상출석', qt: 1.0, cat: 'attend'},
+      {leader: '민지', name: '최호성', grade: 10, w1: '결(연락X)', w2: '결(직장)', w3: 'A', cnt: 1, status: '부분출석', reason: '직장/생업', qt: 2.0, cat: 'attend'},
+      {leader: '민지', name: '최영수', grade: 9, w1: '결(연락X)', w2: 'A', w3: '결(학업)', cnt: 1, status: '부분출석', reason: '학업/시험', qt: 0.0, cat: 'attend'},
+      {leader: '민지', name: '정민정', grade: 6, w1: '결(연락X)', w2: '결(연락X)', w3: '결(연락X)', cnt: 0, status: '미출석', reason: '연락안됨🚨', qt: 0, cat: 'urgent'},
+      {leader: '민지', name: '윤하준★', grade: 3, w1: '결(군유지)', w2: '결(가족)', w3: '결(가족)', cnt: 0, status: '미출석', reason: '가족일정', qt: 0, cat: 'etc'},
+      {leader: '민지', name: '이다원★', grade: 4, w1: '결(학업)', w2: '결(학업)', w3: '결(학업)', cnt: 0, status: '미출석', reason: '학업/시험', qt: 0, cat: 'etc'},
+      {leader: '민지', name: '박나연', grade: 9, w1: '결(연락X)', w2: '결(군유지)', w3: '결(군유지)', cnt: 0, status: '미출석', reason: '타교회⚪', qt: 0, cat: 'abroad'},
+      {leader: '민지', name: '정명주', grade: 8, w1: '결(군유지)', w2: '결(군유지)', w3: '결(군유지)', cnt: 0, status: '미출석', reason: '유학⚪', qt: 0, cat: 'abroad'},
+      {leader: '민지', name: '현상건★', grade: 5, w1: '결(학업)', w2: '결(군유지)', w3: '결(군유지)', cnt: 0, status: '미출석', reason: '군/편입⚪', qt: 0, cat: 'abroad'},
+
+      // 김수인 조
+      {leader: '수인', name: '신제홍', grade: 3, w1: 'A', w2: 'A', w3: 'A', cnt: 3, status: '정기출석', reason: '정상출석', qt: 3.3, cat: 'attend'},
+      {leader: '수인', name: '김미서', grade: 4, w1: '결(연락X)', w2: 'A', w3: 'A', cnt: 2, status: '부분출석', reason: '정상출석', qt: 5.0, cat: 'attend'},
+      {leader: '수인', name: '박지호A', grade: 5, w1: 'A', w2: 'A', w3: '결(가족)', cnt: 2, status: '부분출석', reason: '가족일정', qt: 2.5, cat: 'attend'},
+      {leader: '수인', name: '최규빈', grade: 5, w1: '결(연락X)', w2: '결(가족)', w3: 'A', cnt: 1, status: '부분출석', reason: '가족일정', qt: 0.0, cat: 'attend'},
+      {leader: '수인', name: '김솔희', grade: 7, w1: '결(연락X)', w2: '결(군유지)', w3: '결(연락X)', cnt: 0, status: '미출석', reason: '연락안됨🚨', qt: 0, cat: 'urgent'},
+      {leader: '수인', name: '김채연B', grade: 7, w1: '결(연락X)', w2: '결(연락X)', w3: '결(연락X)', cnt: 0, status: '미출석', reason: '연락안됨🚨', qt: 0, cat: 'urgent'},
+      {leader: '수인', name: '류현진', grade: 4, w1: '결(연락X)', w2: '결(연락X)', w3: '결(연락X)', cnt: 0, status: '미출석', reason: '연락안됨🚨', qt: 0, cat: 'urgent'},
+      {leader: '수인', name: '이유정', grade: 2, w1: '결(연락X)', w2: '결(연락X)', w3: '결(연락X)', cnt: 0, status: '미출석', reason: '연락안됨🚨', qt: 0, cat: 'urgent'},
+      {leader: '수인', name: '신정연★', grade: 3, w1: '결(학업)', w2: '결(연락X)', w3: '결(연락X)', cnt: 0, status: '미출석', reason: '연락안됨🚨', qt: 0, cat: 'urgent'},
+
+      // 반우인 조
+      {leader: '우인', name: '최장혁', grade: 5, w1: 'A', w2: 'A', w3: 'A', cnt: 3, status: '정기출석', reason: '정상출석', qt: 4.7, cat: 'attend'},
+      {leader: '우인', name: '이은혜', grade: 8, w1: 'C', w2: '결(군유지)', w3: 'C', cnt: 2, status: '부분출석', reason: 'GBS만 참석', qt: 0.0, cat: 'attend'},
+      {leader: '우인', name: '오재윤', grade: 9, w1: '결(연락X)', w2: 'A', w3: '결(군유지)', cnt: 1, status: '부분출석', reason: '군유지', qt: 0.0, cat: 'attend'},
+      {leader: '우인', name: '탁은비', grade: 8, w1: '결(연락X)', w2: '결(군유지)', w3: 'A', cnt: 1, status: '부분출석', reason: '군유지', qt: 0.0, cat: 'attend'},
+      {leader: '우인', name: '하범수', grade: 10, w1: '결(연락X)', w2: '결(연락X)', w3: '결(연락X)', cnt: 0, status: '미출석', reason: '연락안됨🚨', qt: 0, cat: 'urgent'},
+      {leader: '우인', name: '이수빈A★', grade: 4, w1: '결(학업)', w2: '결(가족)', w3: '결(연락X)', cnt: 0, status: '미출석', reason: '연락안됨🚨', qt: 0, cat: 'urgent'},
+      {leader: '우인', name: '김준혁', grade: 13, w1: '결(연락X)', w2: '결(군유지)', w3: '결(군유지)', cnt: 0, status: '미출석', reason: '파일럿⚪', qt: 0, cat: 'abroad'},
+      {leader: '우인', name: '손의정', grade: 10, w1: '결(연락X)', w2: '결(군유지)', w3: '결(군유지)', cnt: 0, status: '미출석', reason: '군유지⚪', qt: 0, cat: 'abroad'},
+      {leader: '우인', name: '홍지인', grade: 6, w1: '결(연락X)', w2: '결(군유지)', w3: '결(군유지)', cnt: 0, status: '미출석', reason: '군유지⚪', qt: 0, cat: 'abroad'},
+      {leader: '우인', name: '황윤호', grade: 2, w1: '결(연락X)', w2: '결(군유지)', w3: '결(군유지)', cnt: 0, status: '미출석', reason: '타교회⚪', qt: 0, cat: 'abroad'},
+      {leader: '우인', name: '김동혁★', grade: 2, w1: '결(학업)', w2: '결(군유지)', w3: '결(군유지)', cnt: 0, status: '미출석', reason: '군유지⚪', qt: 0, cat: 'abroad'},
+
+      // 윤정화 조
+      {leader: '정화', name: '양예지', grade: 3, w1: 'A', w2: 'A', w3: 'A', cnt: 3, status: '정기출석', reason: '정상출석', qt: 3.3, cat: 'attend'},
+      {leader: '정화', name: '김지은B', grade: 7, w1: 'A', w2: '결(군유지)', w3: 'A', cnt: 2, status: '부분출석', reason: '군유지', qt: 3.5, cat: 'attend'},
+      {leader: '정화', name: '이솔', grade: 6, w1: '결(가족)', w2: 'A', w3: 'A', cnt: 2, status: '부분출석', reason: '가족일정', qt: 0.0, cat: 'attend'},
+      {leader: '정화', name: '봉진훤', grade: 11, w1: '결(연락X)', w2: '결(연락X)', w3: '결(연락X)', cnt: 0, status: '미출석', reason: '연락안됨🚨', qt: 0, cat: 'urgent'},
+      {leader: '정화', name: '박균환', grade: 4, w1: '결(군유지)', w2: '결(군유지)', w3: '결(군유지)', cnt: 0, status: '미출석', reason: '지방⚪', qt: 0, cat: 'abroad'},
+      {leader: '정화', name: '박현지', grade: 10, w1: '결(학업)', w2: '결(군유지)', w3: '결(군유지)', cnt: 0, status: '미출석', reason: '군유지⚪', qt: 0, cat: 'abroad'},
+      {leader: '정화', name: '이시형', grade: 11, w1: '결(연락X)', w2: '결(군유지)', w3: '결(군유지)', cnt: 0, status: '미출석', reason: '유학⚪', qt: 0, cat: 'abroad'},
+      {leader: '정화', name: '이하경', grade: 3, w1: '결(연락X)', w2: '결(군유지)', w3: '결(군유지)', cnt: 0, status: '미출석', reason: '군유지⚪', qt: 0, cat: 'abroad'},
+      {leader: '정화', name: '최성찬A', grade: 3, w1: '결(군유지)', w2: '결(군유지)', w3: '결(군유지)', cnt: 0, status: '미출석', reason: '군/지방⚪', qt: 0, cat: 'abroad'},
+      {leader: '정화', name: '석락원★', grade: 5, w1: '결(군유지)', w2: '결(군유지)', w3: '결(군유지)', cnt: 0, status: '미출석', reason: '군복무⚪', qt: 0, cat: 'abroad'},
+
+      // 이현섭 조
+      {leader: '현섭', name: '조현서', grade: 6, w1: 'A', w2: 'A', w3: 'A', cnt: 3, status: '정기출석', reason: '정상출석', qt: 6.0, cat: 'attend'},
+      {leader: '현섭', name: '임유민★', grade: 4, w1: 'A', w2: 'A', w3: '결(가족)', cnt: 2, status: '부분출석', reason: '가족일정', qt: 4.0, cat: 'attend'},
+      {leader: '현섭', name: '김서현', grade: 6, w1: '결(연락X)', w2: '결(연락X)', w3: 'A', cnt: 1, status: '부분출석', reason: '정상출석', qt: 0.0, cat: 'attend'},
+      {leader: '현섭', name: '이찬규', grade: 5, w1: '결(군유지)', w2: 'A', w3: '결(가족)', cnt: 1, status: '부분출석', reason: '가족일정', qt: 3.0, cat: 'attend'},
+      {leader: '현섭', name: '배승주', grade: 9, w1: '결(연락X)', w2: '결(연락X)', w3: '결(가족)', cnt: 0, status: '미출석', reason: '가족일정', qt: 0, cat: 'etc'},
+      {leader: '현섭', name: '윤태건', grade: 7, w1: '결(군유지)', w2: '결(군유지)', w3: '결(가족)', cnt: 0, status: '미출석', reason: '가족일정', qt: 0, cat: 'etc'},
+      {leader: '현섭', name: '김찬승', grade: 7, w1: '결(연락X)', w2: '결(연락X)', w3: '결(연락X)', cnt: 0, status: '미출석', reason: '연락안됨🚨', qt: 0, cat: 'urgent'},
+      {leader: '현섭', name: '장영재', grade: 9, w1: '결(군유지)', w2: '결(군유지)', w3: '결(연락X)', cnt: 0, status: '미출석', reason: '연락안됨🚨', qt: 0, cat: 'urgent'},
+      {leader: '현섭', name: '전소현', grade: 7, w1: '결(연락X)', w2: '결(연락X)', w3: '결(연락X)', cnt: 0, status: '미출석', reason: '연락안됨🚨', qt: 0, cat: 'urgent'},
+      {leader: '현섭', name: '전유찬', grade: 5, w1: '결(연락X)', w2: '결(연락X)', w3: '결(연락X)', cnt: 0, status: '미출석', reason: '연락안됨🚨', qt: 0, cat: 'urgent'},
+      {leader: '현섭', name: '유성현★', grade: 1, w1: '결(군유지)', w2: '결(연락X)', w3: '결(연락X)', cnt: 0, status: '미출석', reason: '연락안됨🚨', qt: 0, cat: 'urgent'}
+    ];
+
+    let currentFilter = 'all';
+    let selectedLeader = 'all';
+
+    function filterMembers(cat) {
+      currentFilter = cat;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('bg-emerald-600', 'text-white', 'font-bold');
+        btn.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300', 'font-medium');
+      });
+      event.target.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300');
+      event.target.classList.add('bg-emerald-600', 'text-white', 'font-bold');
+      renderMembers();
+    }
+
+    function filterLeader(leader) {
+      selectedLeader = leader;
+      renderMembers();
+    }
+
+    function searchMembers() {
+      renderMembers();
+    }
+
+    function renderMembers() {
+      const q = (document.getElementById('member-search')?.value || '').trim().toLowerCase();
+      const tbody = document.getElementById('member-rows');
+      tbody.innerHTML = '';
+
+      const filtered = membersData.filter(m => {
+        if (currentFilter !== 'all' && m.cat !== currentFilter) return false;
+        if (selectedLeader !== 'all' && m.leader !== selectedLeader) return false;
+        if (q && !m.name.toLowerCase().includes(q) && !m.leader.toLowerCase().includes(q) && !String(m.grade).includes(q)) return false;
+        return true;
+      });
+
+      filtered.forEach(m => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors';
+
+        const fmtBadge = (val) => {
+          if (val === 'A') return '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300">A</span>';
+          if (val === 'B') return '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300">B</span>';
+          if (val === 'C') return '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-sky-100 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300">C</span>';
+          if (val.includes('연락X')) return '<span class="px-1.5 py-0.5 rounded text-[11px] bg-rose-100 dark:bg-rose-950/70 text-rose-600 dark:text-rose-400 font-bold">0</span>';
+          if (val.includes('군유지')) return '<span class="px-1.5 py-0.5 rounded text-[11px] bg-slate-200 dark:bg-slate-800 text-slate-500">4</span>';
+          if (val.includes('학업')) return '<span class="px-1.5 py-0.5 rounded text-[11px] bg-blue-100 dark:bg-blue-950/70 text-blue-600 font-semibold">2</span>';
+          if (val.includes('직장')) return '<span class="px-1.5 py-0.5 rounded text-[11px] bg-purple-100 dark:bg-purple-950/70 text-purple-600 font-semibold">3</span>';
+          if (val.includes('가족')) return '<span class="px-1.5 py-0.5 rounded text-[11px] bg-orange-100 dark:bg-orange-950/70 text-orange-600 font-semibold">1</span>';
+          return '<span class="text-slate-400">-</span>';
+        };
+
+        const cntBadge = m.cnt === 3 ? `<span class="font-bold text-emerald-600 dark:text-emerald-400">3/3회</span>` : (m.cnt > 0 ? `<span class="font-semibold text-amber-600 dark:text-amber-400">${m.cnt}/3회</span>` : `<span class="text-slate-400">0회</span>`);
+
+        const reasonBadge = m.cat === 'urgent' ? 
+          `<span class="font-bold text-rose-600 dark:text-rose-400">🚨 연락두절 (긴급)</span>` : 
+          (m.cnt === 3 ? `<span class="font-semibold text-emerald-600 dark:text-emerald-400">정기출석 완주</span>` : `<span class="text-slate-500 dark:text-slate-400">${m.reason}</span>`);
+
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-semibold text-slate-500 dark:text-slate-400">${m.leader}조</td>
+          <td class="py-2.5 px-3 font-bold text-slate-900 dark:text-white">${m.name}</td>
+          <td class="py-2.5 px-2 text-center text-slate-500">${m.grade}</td>
+          <td class="py-2.5 px-2.5 text-center">${fmtBadge(m.w1)}</td>
+          <td class="py-2.5 px-2.5 text-center">${fmtBadge(m.w2)}</td>
+          <td class="py-2.5 px-2.5 text-center">${fmtBadge(m.w3)}</td>
+          <td class="py-2.5 px-2.5 text-center">${cntBadge}</td>
+          <td class="py-2.5 px-3">${reasonBadge}</td>
+          <td class="py-2.5 px-2.5 text-center text-slate-500">${m.qt > 0 ? m.qt + '회' : '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Initial load
+    renderMembers();
+  </script>
+</body>
+</html>
